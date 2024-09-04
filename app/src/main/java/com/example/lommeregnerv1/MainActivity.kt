@@ -9,10 +9,25 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,14 +52,76 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun regnerv2() {
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary,
+                ),
+                title = {
+                    Text("Calculator")
+                },
+                actions = {
+                    IconButton(onClick = { /*TODO*/ }) {
+                        Icon(Icons.Default.Settings, contentDescription = "Add")
+                    }
+                },
+
+
+            )
+        },
+        bottomBar = { MyButtonBar() },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { }) {
+                Icon(Icons.Default.Add, contentDescription = "Add")
+            }
+        }
+    ) { innerPadding ->
+        regner(modifier = Modifier.padding(innerPadding))
+    }
+}
+@Composable
+fun MyButtonBar() {
+    // https://developer.android.com/develop/ui/compose/components/app-bars#bottom
+    BottomAppBar(
+        actions = {
+            IconButton(onClick = { /* do something */ }) {
+                Icon(Icons.Filled.Check, contentDescription = "Localized description")
+            }
+            IconButton(onClick = { /* do something */ }) {
+                Icon(
+                    Icons.Filled.Edit,
+                    contentDescription = "Localized description",
+                )
+            }
+
+        },
+        // Generally, do not use two floating action buttons on the same screen.
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = { /* do something */ },
+                containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+            ) {
+                Icon(Icons.Filled.Add, "Localized description")
+            }
+        }
+    )
+}
+
 @Composable
 fun regner(modifier: Modifier = Modifier) {
     var numberStr1 by remember { mutableStateOf("") }
     var numberStr2 by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
     var errorStateInfo by remember { mutableStateOf("") }
+
     Column(modifier = modifier) {
-    Text(text = "Calculator")
+
 
     OutlinedTextField(value = numberStr1, onValueChange ={
                       numberStr1 =it
@@ -88,6 +165,6 @@ fun regner(modifier: Modifier = Modifier) {
 @Composable
 fun DefaultPreview() {
     Lommeregnerv1Theme {
-        regner()
+        regnerv2()
     }
 }
