@@ -146,6 +146,7 @@ fun regner(
     var numberStr2Error by remember { mutableStateOf(false) }
 
     var numberStr1Touched by remember { mutableStateOf(false) }
+    var numberStr2Touched by remember { mutableStateOf(false) }
 
 
     Column(modifier = modifier.padding(16.dp)) {
@@ -154,14 +155,11 @@ fun regner(
             value = numberStr1,
             onValueChange = {
                 numberStr1 = it
-
                     numberStr1Error = it.isEmpty()
-
-
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             label = { Text("Enter a number") },
-            isError = numberStr1Error,
+            isError = numberStr1Error.or(numberStr1Touched && numberStr1.isEmpty()),
             supportingText = {
                 if (numberStr1Error) {
                     Text("invalid input", color = MaterialTheme.colorScheme.error)
@@ -171,7 +169,7 @@ fun regner(
                 .onFocusChanged {
                      focusState ->
                     if (focusState.isFocused) {
-                        numberStr1Touched = false
+                        numberStr1Touched = true
                     }
                 }
         )
@@ -182,12 +180,20 @@ fun regner(
             numberStr2Error = it.isEmpty() },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         label = { Text("Enter a number") },
-        isError = numberStr2Error,
+        isError = numberStr2Error.or(numberStr2Touched && numberStr2.isEmpty()),
         supportingText = {
             if (numberStr2Error) {
                 Text("invalid input", color = MaterialTheme.colorScheme.error)
             }
-        },)
+        },
+        modifier = Modifier.padding(bottom = 8.dp)
+            .onFocusChanged {
+                    focusState ->
+                if (focusState.isFocused) {
+                    numberStr2Touched = true
+                }
+            }
+        )
 
     Row {
         Button(
