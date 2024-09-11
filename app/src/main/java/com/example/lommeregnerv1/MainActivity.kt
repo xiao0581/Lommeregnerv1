@@ -37,8 +37,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.example.lommeregnerv1.ui.theme.Lommeregnerv1Theme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -140,40 +142,70 @@ fun regner(
     var numberStr1 by remember { mutableStateOf("") }
     var numberStr2 by remember { mutableStateOf("") }
     var result by remember { mutableStateOf("") }
-    var errorStateInfo by remember { mutableStateOf("") }
+    var numberStr1Error by remember { mutableStateOf(false) }
+    var numberStr2Error by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier) {
+    var numberStr1Touched by remember { mutableStateOf(false) }
 
 
-    OutlinedTextField(
-        value = numberStr1,
-        onValueChange = {
-            numberStr1 = it
-        },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        label = { Text("Enter a number") },
+    Column(modifier = modifier.padding(16.dp)) {
 
+        OutlinedTextField(
+            value = numberStr1,
+            onValueChange = {
+                numberStr1 = it
+
+                    numberStr1Error = it.isEmpty()
+
+
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            label = { Text("Enter a number") },
+            isError = numberStr1Error,
+            supportingText = {
+                if (numberStr1Error) {
+                    Text("invalid input", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            modifier = Modifier.padding(bottom = 8.dp)
+                .onFocusChanged {
+                     focusState ->
+                    if (focusState.isFocused) {
+                        numberStr1Touched = false
+                    }
+                }
         )
 
-
-    OutlinedTextField(value = numberStr2, onValueChange ={numberStr2 =it},
+    OutlinedTextField(value = numberStr2,
+        onValueChange ={
+            numberStr2 =it
+            numberStr2Error = it.isEmpty() },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        label = { Text("Enter a number") })
+        label = { Text("Enter a number") },
+        isError = numberStr2Error,
+        supportingText = {
+            if (numberStr2Error) {
+                Text("invalid input", color = MaterialTheme.colorScheme.error)
+            }
+        },)
 
     Row {
-        Button(onClick = {
-            if (numberStr1.isEmpty() || numberStr2.isEmpty()) {
-                // 如果其中一个输入为空，显示 Snackbar
-                scope.launch {
-                    snackbarHostState.showSnackbar(
-                        "Please enter both numbers", // 错误提示信息
-                        duration = SnackbarDuration.Short
-                    )
+        Button(
+            onClick = {
+                if (numberStr1.isEmpty() || numberStr2.isEmpty()) {
+                    scope.launch {
+                        snackbarHostState.showSnackbar(
+                            "Please enter both numbers",
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                } else {
+                    result = (numberStr1.toInt() + numberStr2.toInt()).toString()
                 }
-            } else {
-                result = (numberStr1.toInt() + numberStr2.toInt()).toString()
-            }
-        }) {
+            },
+            enabled = numberStr1.isNotEmpty() && numberStr2.isNotEmpty()
+
+        ) {
             Text(text = "+")
         }
         Button(onClick = { if (numberStr1.isEmpty() || numberStr2.isEmpty()) {
